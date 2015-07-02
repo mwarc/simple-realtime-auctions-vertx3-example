@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>The best online auction site!</title>
+
+    <script src="http://cdn.sockjs.org/sockjs-0.3.4.min.js"></script>
+    <script src="js/vertxbus-3.0.0.js"></script>
+    <script src="js/realtime-auctions.js"></script>
+</head>
+
+<body onload="init();">
+
+<h3>Auction 1</h3>
+<div id="error_message"></div>
+<form>
+    Current price:
+    <span id="current_price"></span>
+    <div>
+        <label for="my_bid_value">Your offer:</label>
+        <input id="my_bid_value" type="text">
+        <input type="button" onclick="bid();" value="Bid">
+    </div>
+    <div>
+        Feed:
+        <textarea id="feed" rows="4" cols="50" readonly></textarea>
+    </div>
+</form>
+
+</body>
+
+</html>
