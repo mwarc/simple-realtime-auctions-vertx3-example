@@ -10,9 +10,9 @@ function loadCurrentPrice() {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
-                document.getElementById('current_price').innerHTML = JSON.parse(xmlhttp.responseText).price + ' EUR';
+                document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(xmlhttp.responseText).price;
             } else {
-                document.getElementById('current_price').innerHTML = '0.00 EUR';
+                document.getElementById('current_price').innerHTML = 'EUR 0.00';
             }
         }
     };
@@ -24,8 +24,8 @@ function registerHandlerForUpdateCurrentPriceAndFeed() {
     var eventBus = new vertx.EventBus('http://localhost:8080/eventbus');
     eventBus.onopen = function () {
         eventBus.registerHandler('auction.' + auction_id, function (message) {
-            document.getElementById('current_price').innerHTML = JSON.parse(message).price + ' EUR';
-            document.getElementById('feed').value += 'New offer: ' + JSON.parse(message).price + ' EUR \n';
+            document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(message).price;
+            document.getElementById('feed').value += 'New offer: EUR ' + JSON.parse(message).price + '\n';
         });
     }
 };
