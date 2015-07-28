@@ -15,11 +15,11 @@ public class AuctionRepository {
     }
 
     public Optional<Auction> getById(String auctionId) {
-        LocalMap<String, String> auction = this.sharedData.getLocalMap(auctionId);
-        if(auction.isEmpty()) {
+        LocalMap<String, String> auctionSharedData = this.sharedData.getLocalMap(auctionId);
+        if(auctionSharedData.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(auction).map(this::convertToAuction);
+        return Optional.of(auctionSharedData).map(this::convertToAuction);
     }
 
     public void save(Auction auction) {
