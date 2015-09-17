@@ -1,7 +1,5 @@
 package com.github.mwarc.realtimeauctions;
 
-import io.vertx.core.json.JsonObject;
-
 import java.math.BigDecimal;
 
 public class Auction {
@@ -14,15 +12,8 @@ public class Auction {
         this.price = price;
     }
 
-    public Auction(String id, JsonObject auction) {
-        this(id, new BigDecimal(auction.getString("price")));
-    }
-
-    public static Auction defaultAuction(String auctionId) {
-        return new Auction(
-            auctionId,
-            BigDecimal.ZERO
-        );
+    public Auction(String auctionId) {
+        this(auctionId, BigDecimal.ZERO);
     }
 
     public String getId() {

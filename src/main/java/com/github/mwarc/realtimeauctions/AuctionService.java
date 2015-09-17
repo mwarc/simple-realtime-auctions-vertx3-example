@@ -22,9 +22,9 @@ public class AuctionService extends AbstractVerticle {
     public void start() {
         Router router = Router.router(vertx);
 
-        router.route().failureHandler(errorHandler());
         router.route("/eventbus/*").handler(eventBusHandler());
         router.mountSubRouter("/api", auctionApiRouter());
+        router.route().failureHandler(errorHandler());
         router.route().handler(staticHandler());
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
@@ -36,7 +36,7 @@ public class AuctionService extends AbstractVerticle {
 
     private SockJSHandler eventBusHandler() {
         BridgeOptions options = new BridgeOptions()
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex("auction\\.[0-9]+"));
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex("auction\\.[0-9]+"));
         return SockJSHandler.create(vertx).bridge(options, event -> {
             if (event.type() == BridgeEvent.Type.SOCKET_CREATED) {
                 logger.info("A socket was created");
@@ -46,16 +46,17 @@ public class AuctionService extends AbstractVerticle {
     }
 
     private Router auctionApiRouter() {
-        AuctionRepository auctionRepository = new AuctionRepository(vertx.sharedData());
-        AuctionApi auctionApi = new AuctionApi(auctionRepository);
+        AuctionRepository repository = new AuctionRepository(vertx.sharedData());
+        AuctionHandler handler = new AuctionHandler(repository);
 
         Router router = Router.router(vertx);
-        router.route().consumes("application/json");
-        router.route().produces("application/json");
         router.route().handler(BodyHandler.create());
 
-        router.get("/auctions/:id").handler(auctionApi::handleGetAuction);
-        router.patch("/auctions/:id").handler(auctionApi::handleChangeAuctionPrice);
+        router.route().consumes("application/json");
+        router.route().produces("application/json");
+
+        router.get("/auctions/:id").handler(handler::handleGetAuction);
+        router.patch("/auctions/:id").handler(handler::handleChangeAuctionPrice);
 
         return router;
     }
