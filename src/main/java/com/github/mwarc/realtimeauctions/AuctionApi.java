@@ -1,5 +1,6 @@
 package com.github.mwarc.realtimeauctions;
 
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Optional;
@@ -8,46 +9,46 @@ import static com.github.mwarc.realtimeauctions.Auction.defaultAuction;
 
 public class AuctionApi {
 
-    private final AuctionRepository auctionRepository;
+    private final AuctionRepository repository;
 
-    public AuctionApi(AuctionRepository auctionRepository) {
-        this.auctionRepository = auctionRepository;
+    public AuctionApi(AuctionRepository repository) {
+        this.repository = repository;
     }
 
-    public void handleGetAuction(RoutingContext routingContext) {
-        String auctionId = routingContext.request().getParam("id");
-        Optional<Auction> auction = this.auctionRepository.getById(auctionId);
+    public void handleGetAuction(RoutingContext context) {
+        String auctionId = context.request().getParam("id");
+        Optional<Auction> auction = this.repository.getById(auctionId);
 
         if (auction.isPresent()) {
-            routingContext.response()
+            context.response()
                 .putHeader("content-type", "application/json")
                 .setStatusCode(200)
-                .end(AuctionConverter.toJson(auction.get()));
+                .end(Json.encodePrettily(auction.get()));
         } else {
-            routingContext.response()
+            context.response()
                 .putHeader("content-type", "application/json")
                 .setStatusCode(404)
                 .end();
         }
     }
 
-    public void handleChangeAuctionPrice(RoutingContext routingContext) {
-        String auctionId = routingContext.request().getParam("id");
-        Auction auctionRequestBody = new Auction(auctionId, routingContext.getBodyAsJson());
-        Auction auctionDatabase = this.auctionRepository.getById(auctionId).orElse(defaultAuction(auctionId));
+    public void handleChangeAuctionPrice(RoutingContext context) {
+        String auctionId = context.request().getParam("id");
+        Auction auctionRequestBody = new Auction(auctionId, context.getBodyAsJson());
+        Auction auctionDatabase = this.repository.getById(auctionId).orElse(defaultAuction(auctionId));
 
         if (AuctionValidator.isBidPossible(auctionDatabase, auctionRequestBody)) {
-            this.auctionRepository.save(auctionRequestBody);
-            routingContext.vertx().eventBus().publish("auction." + auctionId, routingContext.getBodyAsString());
+            this.repository.save(auctionRequestBody);
+            context.vertx().eventBus().publish("auction." + auctionId, context.getBodyAsString());
 
-            routingContext.response()
+            context.response()
                 .putHeader("content-type", "application/json")
                 .setStatusCode(200)
                 .end();
         } else {
-            routingContext.response()
+            context.response()
                 .putHeader("content-type", "application/json")
-                .setStatusCode(400)
+                .setStatusCode(422)
                 .end();
         }
     }
