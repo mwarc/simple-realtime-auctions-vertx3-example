@@ -10,7 +10,7 @@ function loadCurrentPrice() {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
-                document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(xmlhttp.responseText).price;
+                document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(xmlhttp.responseText).price.toFixed(2);
             } else {
                 document.getElementById('current_price').innerHTML = 'EUR 0.00';
             }

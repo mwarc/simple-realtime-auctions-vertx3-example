@@ -14,9 +14,9 @@ import io.vertx.ext.web.handler.sockjs.PermittedOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 
 
-public class AuctionService extends AbstractVerticle {
+public class AuctionServiceVerticle extends AbstractVerticle {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuctionServiceVerticle.class);
 
     @Override
     public void start() {
@@ -28,10 +28,6 @@ public class AuctionService extends AbstractVerticle {
         router.route().handler(staticHandler());
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
-    }
-
-    private ErrorHandler errorHandler() {
-        return ErrorHandler.create(true);
     }
 
     private SockJSHandler eventBusHandler() {
@@ -47,7 +43,8 @@ public class AuctionService extends AbstractVerticle {
 
     private Router auctionApiRouter() {
         AuctionRepository repository = new AuctionRepository(vertx.sharedData());
-        AuctionHandler handler = new AuctionHandler(repository);
+        AuctionValidator validator = new AuctionValidator(repository);
+        AuctionHandler handler = new AuctionHandler(repository, validator);
 
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
@@ -55,15 +52,19 @@ public class AuctionService extends AbstractVerticle {
         router.route().consumes("application/json");
         router.route().produces("application/json");
 
+        router.route("/auctions/:id").handler(handler::initAuctionInSharedData);
         router.get("/auctions/:id").handler(handler::handleGetAuction);
         router.patch("/auctions/:id").handler(handler::handleChangeAuctionPrice);
 
         return router;
     }
 
+    private ErrorHandler errorHandler() {
+        return ErrorHandler.create(true);
+    }
+
     private StaticHandler staticHandler() {
-        StaticHandler staticHandler = StaticHandler.create();
-        staticHandler.setCachingEnabled(false);
-        return staticHandler;
+        return StaticHandler.create()
+            .setCachingEnabled(false);
     }
 }

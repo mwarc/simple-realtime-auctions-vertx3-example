@@ -9,9 +9,11 @@ import java.util.Optional;
 public class AuctionHandler {
 
     private final AuctionRepository repository;
+    private final AuctionValidator validator;
 
-    public AuctionHandler(AuctionRepository repository) {
+    public AuctionHandler(AuctionRepository repository, AuctionValidator validator) {
         this.repository = repository;
+        this.validator = validator;
     }
 
     public void handleGetAuction(RoutingContext context) {
@@ -33,14 +35,13 @@ public class AuctionHandler {
 
     public void handleChangeAuctionPrice(RoutingContext context) {
         String auctionId = context.request().getParam("id");
-        Auction auctionRequestBody = new Auction(
+        Auction auctionRequest = new Auction(
             auctionId,
             new BigDecimal(context.getBodyAsJson().getString("price"))
         );
-        Auction auctionDatabase = this.repository.getById(auctionId).orElse(new Auction(auctionId));
 
-        if (AuctionValidator.isBidPossible(auctionDatabase, auctionRequestBody)) {
-            this.repository.save(auctionRequestBody);
+        if (validator.validate(auctionRequest)) {
+            this.repository.save(auctionRequest);
             context.vertx().eventBus().publish("auction." + auctionId, context.getBodyAsString());
 
             context.response()
@@ -51,5 +52,16 @@ public class AuctionHandler {
                 .setStatusCode(422)
                 .end();
         }
+    }
+
+    public void initAuctionInSharedData(RoutingContext context) {
+        String auctionId = context.request().getParam("id");
+
+        Optional<Auction> auction = this.repository.getById(auctionId);
+        if(!auction.isPresent()) {
+            this.repository.save(new Auction(auctionId));
+        }
+
+        context.next();
     }
 }

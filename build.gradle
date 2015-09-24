@@ -16,7 +16,7 @@ dependencies {
     compile "io.vertx:vertx-web:3.0.0"
 }
 
-def mainVerticle = "com.github.mwarc.realtimeauctions.AuctionService"
+def mainVerticle = "com.github.mwarc.realtimeauctions.AuctionServiceVerticle"
 mainClassName = "io.vertx.core.Starter"
 run {
     args = ["run", mainVerticle]

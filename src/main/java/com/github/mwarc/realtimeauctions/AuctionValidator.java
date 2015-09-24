@@ -1,15 +1,17 @@
 package com.github.mwarc.realtimeauctions;
 
-import java.math.BigDecimal;
-
 public class AuctionValidator {
 
-    public static boolean isBidPossible(
-        Auction auctionDatabase,
-        Auction auctionRequestBody
-    ) {
-        BigDecimal currentPrice = auctionDatabase.getPrice();
-        BigDecimal newPrice = auctionRequestBody.getPrice();
-        return currentPrice.compareTo(newPrice) == -1;
+    private final AuctionRepository repository;
+
+    public AuctionValidator(AuctionRepository repository) {
+        this.repository = repository;
+    }
+
+    public boolean validate(Auction auction) {
+        Auction auctionDatabase = repository.getById(auction.getId())
+            .orElseThrow(() -> new AuctionNotFoundException(auction.getId()));
+
+        return auctionDatabase.getPrice().compareTo(auction.getPrice()) == -1;
     }
 }
