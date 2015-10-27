@@ -4,6 +4,10 @@
 
 Simple realtime auctions example using Websockets and Vert.x 3.
 
+## Requirements
+
+- jdk8
+
 ## How to run
 
 `./gradlew run`
