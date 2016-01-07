@@ -21,11 +21,11 @@ function loadCurrentPrice() {
 };
 
 function registerHandlerForUpdateCurrentPriceAndFeed() {
-    var eventBus = new vertx.EventBus('http://localhost:8080/eventbus');
+    var eventBus = new EventBus('http://localhost:8080/eventbus');
     eventBus.onopen = function () {
-        eventBus.registerHandler('auction.' + auction_id, function (message) {
-            document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(message).price;
-            document.getElementById('feed').value += 'New offer: EUR ' + JSON.parse(message).price + '\n';
+        eventBus.registerHandler('auction.' + auction_id, function (error, message) {
+            document.getElementById('current_price').innerHTML = 'EUR ' + JSON.parse(message.body).price;
+            document.getElementById('feed').value += 'New offer: EUR ' + JSON.parse(message.body).price + '\n';
         });
     }
 };
