@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 repositories {
@@ -12,8 +12,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile "io.vertx:vertx-core:3.2.0"
-    compile "io.vertx:vertx-web:3.2.0"
+    compile "io.vertx:vertx-core:3.2.1"
+    compile "io.vertx:vertx-web:3.2.1"
 }
 
 def mainVerticle = "com.github.mwarc.realtimeauctions.AuctionServiceVerticle"
@@ -41,5 +41,5 @@ shadowJar {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
+    gradleVersion = '2.11'
 }
