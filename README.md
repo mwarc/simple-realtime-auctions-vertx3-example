@@ -4,6 +4,8 @@
 
 Simple realtime auctions example using Websockets and Vert.x 3.
 
+If you are interested in a more complex example see here: https://github.com/mwarc/realtime-auctions-vertx3-example
+
 ## Requirements
 
 - jdk8
