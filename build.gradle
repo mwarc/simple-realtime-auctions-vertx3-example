@@ -12,8 +12,8 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile "io.vertx:vertx-core:3.3.0"
-    compile "io.vertx:vertx-web:3.3.0"
+    compile "io.vertx:vertx-core:3.3.3"
+    compile "io.vertx:vertx-web:3.3.3"
 }
 
 def mainVerticle = "com.github.mwarc.realtimeauctions.AuctionServiceVerticle"
@@ -41,5 +41,5 @@ shadowJar {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
+    gradleVersion = '3.1'
 }
